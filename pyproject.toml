@@ -19,5 +19,5 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.scripts]
-pyparquet = "main:cli" # Entry point to the CLI tool
+pyparquet = "pyparquet:cli" # Entry point to the CLI tool
 
