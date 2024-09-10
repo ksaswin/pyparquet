@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pyparquet"
+version = "0.1.0"
+description = "CLI tool to work with Parquet files"
+authors = ["ksaswin"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+duckdb = "^1.0.0"
+click = "^8.1.7"
+numpy = "^2.1.1"
+pandas = "^2.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+pyparquet = "pyparquet:cli" # Entry point to the CLI tool
+
