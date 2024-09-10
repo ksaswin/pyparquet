@@ -45,6 +45,9 @@ COMMANDS:
             Print the table
         Usage:
             pyparquet cat FILE
+        Options:
+            -r, --rows   INTEGER    Max number of rows to display
+            -o, --offset INTEGER    Offset the starting point
   csv
         Description:
             Transform & Save file in CSV format
@@ -58,12 +61,12 @@ COMMANDS:
         Usage:
             pyparquet head [OPTIONS] FILE
         Options:
-            -r, --rows INTEGER  Number of rows to print (Default 10)
+            -r, --rows INTEGER  Number of rows to print [default: 10]
   tail
         Description:
             Print the last 'n' rows of the table
         Usage:
             pyparquet tail [OPTIONS] FILE
         Options:
-            -r, --rows INTEGER  Number of rows to print (Default 10)
+            -r, --rows INTEGER  Number of rows to print [default: 10]
 ```

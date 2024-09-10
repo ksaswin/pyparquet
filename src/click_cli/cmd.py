@@ -5,14 +5,31 @@ import click
 from src.parquet_duck.utils import get_parquet_reader
 
 
+# """Interactively read & parse parquet files"""
+# @click.command()
+# @click.argument("file")
+# def read(file: str) -> None:
+#     print(file)
+#     pd = get_parquet_reader(file)
+#
+#     print(pd)
+
+
 """Show the entire table"""
 @click.command()
 @click.argument("file")
-def cat(file: str) -> None:
+@click.option("--rows", "-r", type=int, help="Max number of rows to display")
+@click.option("--offset", "-o", type=int, help="Offset the starting point")
+def cat(file: str, rows: int | None, offset: int | None) -> None:
     pd = get_parquet_reader(file)
 
+    row_offset = 0
+
+    if offset is not None:
+        row_offset = offset
+
     try:
-        pd.show_table()
+        pd.show_table(rows, row_offset)
     except Exception as e:
         raise e
     finally:
@@ -22,7 +39,7 @@ def cat(file: str) -> None:
 """Render the first specified number of rows in the table"""
 @click.command()
 @click.argument("file")
-@click.option("--rows", "-r", default=10, type=int, help="Number of rows to print (Default 10)")
+@click.option("--rows", "-r", default=10, type=int, show_default=True, help="Number of rows to print")
 def head(file: str, rows: int) -> None:
     pd = get_parquet_reader(file)
 
@@ -37,7 +54,7 @@ def head(file: str, rows: int) -> None:
 """Render the last specified number of rows in the table"""
 @click.command()
 @click.argument("file")
-@click.option("--rows", "-r", default=10, type=int, help="Number of rows to print (Default 10)")
+@click.option("--rows", "-r", default=10, show_default=True, type=int, help="Number of rows to print")
 def tail(file: str, rows: int) -> None:
     pd = get_parquet_reader(file)
 
@@ -70,4 +87,14 @@ def csv(file: str, csvfile: str | None) -> None:
         pd.destroy()
 
     print(f"Saved file to: {csvfile}")
+
+
+# """Transform Parquet file to desired format"""
+# @click.command()
+# @click.argument("file")
+# @click.option("--csv", help="Save in CSV format")
+# @click.option("--excel", help="Save in CSV format")
+# def transform(file: str, csv: str | None) -> None:
+#     pd = get_parquet_reader(file)
+#     pass
 
