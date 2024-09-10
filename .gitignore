@@ -3,4 +3,6 @@
 */**/.null-ls*
 .null-ls*
 
+.DS_Store
+
 test.parquet
