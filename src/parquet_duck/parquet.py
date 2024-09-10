@@ -13,17 +13,36 @@ class ParquetDuck:
         self.connection.read_parquet(self.file).create_view(self.VIEW)
 
 
-    def show_table(self, rows: int | None=None, show_tail: bool=False) -> None:
-        offset = 0
+    # TODO: Idea: Maybe cache this?
+    @property
+    def get_total_row_count(self) -> int | None:
+        row_count = duckdb.view(self.VIEW).count("*").fetchone()
 
+        if row_count is None:
+            return None
+
+        return row_count[0]
+
+
+    def show_table(self, rows: int | None=None, offset: int=0, show_tail: bool=False) -> None: #FIXME: Refactor this! Maybe split to head, tail and cat?
         if show_tail:
-            row_count = duckdb.view(self.VIEW).count("*").fetchone()
+            if rows is None:
+                raise Exception("Mandatory row argument is missing!")
+
+            row_count = self.get_total_row_count
 
             if row_count is None:
                 raise Exception("Error while trying to read rows")
 
-            row_count = row_count[0]
             offset = row_count - rows
+
+        if rows is None and offset != 0:
+            row_count = self.get_total_row_count
+
+            if row_count is None:
+                raise Exception("Error while trying to read rows")
+
+            rows = row_count
 
         sql = duckdb.view(self.VIEW).select("*")
 
