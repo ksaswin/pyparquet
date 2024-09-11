@@ -2,7 +2,7 @@ from datetime import datetime as dt
 
 import click
 
-from src.parquet_duck.utils import get_parquet_reader
+from src.parquet_duck.parquet import ParquetDuck
 
 
 # """Interactively read & parse parquet files"""
@@ -10,7 +10,7 @@ from src.parquet_duck.utils import get_parquet_reader
 # @click.argument("file")
 # def read(file: str) -> None:
 #     print(file)
-#     pd = get_parquet_reader(file)
+#     pd = ParquetDuck(file)
 #
 #     print(pd)
 
@@ -22,7 +22,7 @@ from src.parquet_duck.utils import get_parquet_reader
 @click.option("--rows", "-r", type=int, help="Max number of rows to display")
 @click.option("--offset", "-o", type=int, help="Offset the starting point")
 def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
-    pd = get_parquet_reader(file)
+    pd = ParquetDuck(file)
 
     row_offset = 0
 
@@ -40,8 +40,6 @@ def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
         pd.show_table(rows, row_offset)
     except Exception as e:
         raise e
-    finally:
-        pd.destroy()
 
 
 """Render the first specified number of rows in the table"""
@@ -49,14 +47,12 @@ def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
 @click.argument("file")
 @click.option("--rows", "-r", default=10, type=int, show_default=True, help="Number of rows to print")
 def head(file: str, rows: int) -> None:
-    pd = get_parquet_reader(file)
+    pd = ParquetDuck(file)
 
     try:
         pd.show_head(rows)
     except Exception as e:
         raise e
-    finally:
-        pd.destroy()
 
 
 """Render the last specified number of rows in the table"""
@@ -64,14 +60,12 @@ def head(file: str, rows: int) -> None:
 @click.argument("file")
 @click.option("--rows", "-r", default=10, show_default=True, type=int, help="Number of rows to print")
 def tail(file: str, rows: int) -> None:
-    pd = get_parquet_reader(file)
+    pd = ParquetDuck(file)
 
     try:
         pd.show_tail(rows)
     except Exception as e:
         raise e
-    finally:
-        pd.destroy()
 
 
 """Convert Parquet file to CSV file"""
@@ -79,7 +73,7 @@ def tail(file: str, rows: int) -> None:
 @click.argument("file")
 @click.option("--csvfile", help="CSV file name to write the data")
 def csv(file: str, csvfile: str | None) -> None:
-    pd = get_parquet_reader(file)
+    pd = ParquetDuck(file)
 
     if csvfile is None:
         dt_iso = dt.now().isoformat()
@@ -91,8 +85,6 @@ def csv(file: str, csvfile: str | None) -> None:
         pd.write_to_csv(csvfile)
     except Exception as e:
         raise e
-    finally:
-        pd.destroy()
 
     click.echo(f"Saved file to: {csvfile}")
 
@@ -103,6 +95,6 @@ def csv(file: str, csvfile: str | None) -> None:
 # @click.option("--csv", help="Save in CSV format")
 # @click.option("--excel", help="Save in CSV format")
 # def transform(file: str, csv: str | None) -> None:
-#     pd = get_parquet_reader(file)
+#     pd = ParquetDuck(file)
 #     pass
 

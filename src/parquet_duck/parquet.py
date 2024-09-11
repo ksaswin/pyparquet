@@ -1,22 +1,27 @@
+import os.path as filepath
+
 import duckdb
 
 
 class ParquetDuck:
     def __init__(self, file):
-        self.VIEW = 'py_parquet_cli_view'
-
         self.file = file
-        self.connection = duckdb.connect(":default:")
+
+        self._table = self._initialise
 
 
-    def create_view(self) -> None:
-        self.connection.read_parquet(self.file).create_view(self.VIEW)
+    @property
+    def _initialise(self) -> duckdb.DuckDBPyRelation:
+        if not filepath.isfile(self.file):
+            raise Exception(f"Could not find {self.file}")
+
+        return duckdb.read_parquet(self.file)
 
 
     # TODO: Idea: Maybe cache this?
     @property
     def total_row_count(self) -> int | None:
-        row_count = duckdb.view(self.VIEW).count("*").fetchone()
+        row_count = self._table.count("*").fetchone()
 
         if row_count is None:
             return None
@@ -26,12 +31,12 @@ class ParquetDuck:
 
     @property
     def total_column_count(self) -> int:
-        return len(duckdb.view(self.VIEW).columns)
+        return len(self._table.columns)
 
 
     @property
     def _all_rows(self) -> duckdb.DuckDBPyRelation:
-        return duckdb.view(self.VIEW).select("*")
+        return self._table.select("*")
 
 
     def _render_table(self, table: duckdb.DuckDBPyRelation) -> None:
@@ -71,13 +76,8 @@ class ParquetDuck:
 
 
     def write_to_csv(self, csv_file: str) -> None:
-        duckdb.view(self.VIEW).to_csv(csv_file)
+        self._table.to_csv(csv_file)
 
 
     def write_to_excel(self) -> None:
         pass
-
-
-    def destroy(self) -> None:
-        self.connection.execute(f"DROP VIEW IF EXISTS {self.VIEW}")
-        self.connection.close()
