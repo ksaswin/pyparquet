@@ -29,32 +29,45 @@ class ParquetDuck:
         return len(duckdb.view(self.VIEW).columns)
 
 
-    def show_table(self, rows: int | None=None, offset: int=0, show_tail: bool=False) -> None: #FIXME: Refactor this! Maybe split to head, tail and cat?
-        if show_tail:
-            if rows is None:
-                raise Exception("Mandatory row argument is missing!")
+    @property
+    def _all_rows(self) -> duckdb.DuckDBPyRelation:
+        return duckdb.view(self.VIEW).select("*")
 
-            row_count = self.total_row_count
 
-            if row_count is None:
-                raise Exception("Error while trying to read rows")
+    def _render_table(self, table: duckdb.DuckDBPyRelation) -> None:
+        table.show()
 
-            offset = row_count - rows
 
-        if rows is None and offset != 0:
-            row_count = self.total_row_count
+    def show_table(self, rows: int | None, offset: int | None) -> None:
+        table = self._all_rows
 
-            if row_count is None:
-                raise Exception("Error while trying to read rows")
+        display_offset = offset if offset is not None else 0
 
-            rows = row_count
+        if display_offset and rows is None:
+            total_rows = self.total_row_count
 
-        sql = duckdb.view(self.VIEW).select("*")
+            if total_rows is not None:
+                table = table.limit(total_rows, display_offset)
 
         if rows is not None:
-            sql = sql.limit(rows, offset)
+            table = table.limit(rows, display_offset)
 
-        sql.show()
+        self._render_table(table)
+
+
+    def show_head(self, rows: int) -> None:
+        table = self._all_rows.limit(rows)
+        self._render_table(table)
+
+
+    def show_tail(self, rows: int) -> None:
+        if self.total_row_count is None:
+            raise Exception("Error while trying to read the table")
+
+        offset = self.total_row_count - rows
+
+        table = self._all_rows.limit(rows, offset)
+        self._render_table(table)
 
 
     def write_to_csv(self, csv_file: str) -> None:

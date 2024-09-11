@@ -52,7 +52,7 @@ def head(file: str, rows: int) -> None:
     pd = get_parquet_reader(file)
 
     try:
-        pd.show_table(rows)
+        pd.show_head(rows)
     except Exception as e:
         raise e
     finally:
@@ -67,7 +67,7 @@ def tail(file: str, rows: int) -> None:
     pd = get_parquet_reader(file)
 
     try:
-        pd.show_table(rows, show_tail=True)
+        pd.show_tail(rows)
     except Exception as e:
         raise e
     finally:

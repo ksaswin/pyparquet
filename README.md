@@ -59,14 +59,14 @@ COMMANDS:
             --csvfile    TEXT       CSV file name to write the data
   head
         Description:
-            Print the first 'n' rows of the table
+            Print the first 'r' rows of the table
         Usage:
             pyparquet head [OPTIONS] FILE
         Options:
             -r, --rows   INTEGER    Number of rows to print [default: 10]
   tail
         Description:
-            Print the last 'n' rows of the table
+            Print the last 'r' rows of the table
         Usage:
             pyparquet tail [OPTIONS] FILE
         Options:
