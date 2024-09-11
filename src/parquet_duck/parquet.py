@@ -15,7 +15,7 @@ class ParquetDuck:
 
     # TODO: Idea: Maybe cache this?
     @property
-    def get_total_row_count(self) -> int | None:
+    def total_row_count(self) -> int | None:
         row_count = duckdb.view(self.VIEW).count("*").fetchone()
 
         if row_count is None:
@@ -24,12 +24,17 @@ class ParquetDuck:
         return row_count[0]
 
 
+    @property
+    def total_column_count(self) -> int:
+        return len(duckdb.view(self.VIEW).columns)
+
+
     def show_table(self, rows: int | None=None, offset: int=0, show_tail: bool=False) -> None: #FIXME: Refactor this! Maybe split to head, tail and cat?
         if show_tail:
             if rows is None:
                 raise Exception("Mandatory row argument is missing!")
 
-            row_count = self.get_total_row_count
+            row_count = self.total_row_count
 
             if row_count is None:
                 raise Exception("Error while trying to read rows")
@@ -37,7 +42,7 @@ class ParquetDuck:
             offset = row_count - rows
 
         if rows is None and offset != 0:
-            row_count = self.get_total_row_count
+            row_count = self.total_row_count
 
             if row_count is None:
                 raise Exception("Error while trying to read rows")
