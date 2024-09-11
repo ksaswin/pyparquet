@@ -18,9 +18,10 @@ from src.parquet_duck.utils import get_parquet_reader
 """Show the entire table"""
 @click.command()
 @click.argument("file")
+@click.option("--shape", "-s", flag_value=True, help="Display the shape of the table")
 @click.option("--rows", "-r", type=int, help="Max number of rows to display")
 @click.option("--offset", "-o", type=int, help="Offset the starting point")
-def cat(file: str, rows: int | None, offset: int | None) -> None:
+def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
     pd = get_parquet_reader(file)
 
     row_offset = 0
@@ -29,6 +30,13 @@ def cat(file: str, rows: int | None, offset: int | None) -> None:
         row_offset = offset
 
     try:
+        if shape:
+            rows = pd.total_row_count
+            columns = pd.total_column_count
+
+            click.echo(f" Columns: {columns}\n Rows:    {rows}")
+            return
+
         pd.show_table(rows, row_offset)
     except Exception as e:
         raise e
