@@ -86,7 +86,7 @@ def csv(file: str, csvfile: str | None) -> None:
     finally:
         pd.destroy()
 
-    print(f"Saved file to: {csvfile}")
+    click.echo(f"Saved file to: {csvfile}")
 
 
 # """Transform Parquet file to desired format"""
