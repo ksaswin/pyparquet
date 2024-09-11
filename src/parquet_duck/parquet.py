@@ -18,7 +18,6 @@ class ParquetDuck:
         return duckdb.read_parquet(self.file)
 
 
-    # TODO: Idea: Maybe cache this?
     @property
     def _shape(self):
         return self._table.shape
