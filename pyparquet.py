@@ -4,6 +4,7 @@ import src.click_cli.cmd as click_cmd
 
 
 @click.group()
+@click.version_option()
 def cli():
     pass
 

@@ -37,7 +37,8 @@ pyparquet [OPTIONS] COMMAND [ARGS]...
 USAGE: pyparquet [OPTIONS] COMMAND [ARGS]...
 
 OPTIONS
-  --help  Show this message and exit.
+  -- version Show the version and exit.
+  --help     Show this message and exit.
 
 COMMANDS:
   cat
@@ -46,6 +47,7 @@ COMMANDS:
         Usage:
             pyparquet cat FILE
         Options:
+            -s, --shape             Display the shape of the table
             -r, --rows   INTEGER    Max number of rows to display
             -o, --offset INTEGER    Offset the starting point
   csv
@@ -54,19 +56,19 @@ COMMANDS:
         Usage:
             pyparquet csv [OPTIONS] FILE
         Options:
-            --csvfile TEXT  CSV file name to write the data
+            --csvfile    TEXT       CSV file name to write the data
   head
         Description:
             Print the first 'n' rows of the table
         Usage:
             pyparquet head [OPTIONS] FILE
         Options:
-            -r, --rows INTEGER  Number of rows to print [default: 10]
+            -r, --rows   INTEGER    Number of rows to print [default: 10]
   tail
         Description:
             Print the last 'n' rows of the table
         Usage:
             pyparquet tail [OPTIONS] FILE
         Options:
-            -r, --rows INTEGER  Number of rows to print [default: 10]
+            -r, --rows   INTEGER    Number of rows to print [default: 10]
 ```
