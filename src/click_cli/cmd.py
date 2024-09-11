@@ -22,17 +22,18 @@ from src.parquet_duck.parquet import ParquetDuck
 @click.option("--rows", "-r", type=int, help="Max number of rows to display")
 @click.option("--offset", "-o", type=int, help="Offset the starting point")
 def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
-    pd = ParquetDuck(file)
+    row_offset = 0 if offset is None else offset
 
     try:
+        pd = ParquetDuck(file)
+
         if shape:
             pd.show_shape()
             return
 
-        row_offset = 0 if offset is None else offset
         pd.show_table(rows, row_offset)
     except Exception as e:
-        raise e
+        click.secho(e, fg=Colors.error)
 
 
 """Render the first specified number of rows in the table"""
@@ -40,12 +41,12 @@ def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
 @click.argument("file")
 @click.option("--rows", "-r", default=10, type=int, show_default=True, help="Number of rows to print")
 def head(file: str, rows: int) -> None:
-    pd = ParquetDuck(file)
-
     try:
+        pd = ParquetDuck(file)
+
         pd.show_head(rows)
     except Exception as e:
-        raise e
+        click.secho(e, fg=Colors.error)
 
 
 """Render the last specified number of rows in the table"""
@@ -53,12 +54,12 @@ def head(file: str, rows: int) -> None:
 @click.argument("file")
 @click.option("--rows", "-r", default=10, show_default=True, type=int, help="Number of rows to print")
 def tail(file: str, rows: int) -> None:
-    pd = ParquetDuck(file)
-
     try:
+        pd = ParquetDuck(file)
+
         pd.show_tail(rows)
     except Exception as e:
-        raise e
+        click.secho(e, fg=Colors.error)
 
 
 """Convert Parquet file to CSV file"""
@@ -66,8 +67,6 @@ def tail(file: str, rows: int) -> None:
 @click.argument("file")
 @click.option("--csvfile", help="CSV file name to write the data")
 def csv(file: str, csvfile: str | None) -> None:
-    pd = ParquetDuck(file)
-
     if csvfile is None:
         dt_iso = dt.now().isoformat()
         dt_iso = dt_iso[:dt_iso.find('.')]
@@ -75,11 +74,12 @@ def csv(file: str, csvfile: str | None) -> None:
         csvfile = f'pyparquet_csv_{dt_iso}.csv'
 
     try:
+        pd = ParquetDuck(file)
         pd.write_to_csv(csvfile)
     except Exception as e:
-        raise e
+        click.secho(e, fg=Colors.error)
 
-    click.echo(f"Saved file to: {csvfile}")
+    click.secho(f"Saved file to: {csvfile}", fg=Colors.success)
 
 
 # """Transform Parquet file to desired format"""
