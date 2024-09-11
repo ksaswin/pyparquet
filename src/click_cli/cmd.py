@@ -24,19 +24,12 @@ from src.parquet_duck.parquet import ParquetDuck
 def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
     pd = ParquetDuck(file)
 
-    row_offset = 0
-
-    if offset is not None:
-        row_offset = offset
-
     try:
         if shape:
-            rows = pd.total_row_count
-            columns = pd.total_column_count
-
-            click.echo(f" Columns: {columns}\n Rows:    {rows}")
+            pd.show_shape()
             return
 
+        row_offset = 0 if offset is None else offset
         pd.show_table(rows, row_offset)
     except Exception as e:
         raise e

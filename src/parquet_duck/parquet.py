@@ -20,18 +20,18 @@ class ParquetDuck:
 
     # TODO: Idea: Maybe cache this?
     @property
-    def total_row_count(self) -> int | None:
-        row_count = self._table.count("*").fetchone()
+    def _shape(self):
+        return self._table.shape
 
-        if row_count is None:
-            return None
 
-        return row_count[0]
+    @property
+    def total_row_count(self) -> int:
+        return self._shape[0]
 
 
     @property
     def total_column_count(self) -> int:
-        return len(self._table.columns)
+        return self._shape[1]
 
 
     @property
@@ -39,30 +39,25 @@ class ParquetDuck:
         return self._table.select("*")
 
 
-    def _render_table(self, table: duckdb.DuckDBPyRelation) -> None:
-        table.show()
+    def show_shape(self) -> None:
+        table_name = "tmp_table_pyparquet"
+
+        duckdb.sql(f"CREATE TABLE {table_name} (row_count int64, column_count int64);")
+        duckdb.table(table_name).insert(self._shape)
+        duckdb.table(table_name).show()
+        duckdb.sql(f"DROP TABLE {table_name};")
 
 
     def show_table(self, rows: int | None, offset: int | None) -> None:
-        table = self._all_rows
-
+        display_rows = rows if rows is not None else self.total_row_count
         display_offset = offset if offset is not None else 0
 
-        if display_offset and rows is None:
-            total_rows = self.total_row_count
-
-            if total_rows is not None:
-                table = table.limit(total_rows, display_offset)
-
-        if rows is not None:
-            table = table.limit(rows, display_offset)
-
-        self._render_table(table)
+        table = self._all_rows.limit(display_rows, display_offset)
+        table.show()
 
 
     def show_head(self, rows: int) -> None:
-        table = self._all_rows.limit(rows)
-        self._render_table(table)
+        self._all_rows.limit(rows).show()
 
 
     def show_tail(self, rows: int) -> None:
@@ -71,8 +66,7 @@ class ParquetDuck:
 
         offset = self.total_row_count - rows
 
-        table = self._all_rows.limit(rows, offset)
-        self._render_table(table)
+        self._all_rows.limit(rows, offset).show()
 
 
     def write_to_csv(self, csv_file: str) -> None:
