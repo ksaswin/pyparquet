@@ -33,7 +33,7 @@ def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
 
         pd.show_table(rows, row_offset)
     except Exception as e:
-        click.secho(e, fg=Colors.error)
+        click.secho(e, fg=Colors.ERROR.value)
 
 
 """Render the first specified number of rows in the table"""
@@ -46,7 +46,7 @@ def head(file: str, rows: int) -> None:
 
         pd.show_head(rows)
     except Exception as e:
-        click.secho(e, fg=Colors.error)
+        click.secho(e, fg=Colors.ERROR.value)
 
 
 """Render the last specified number of rows in the table"""
@@ -59,7 +59,7 @@ def tail(file: str, rows: int) -> None:
 
         pd.show_tail(rows)
     except Exception as e:
-        click.secho(e, fg=Colors.error)
+        click.secho(e, fg=Colors.ERROR.value)
 
 
 """Convert Parquet file to CSV file"""
@@ -77,9 +77,9 @@ def csv(file: str, csvfile: str | None) -> None:
         pd = ParquetDuck(file)
         pd.write_to_csv(csvfile)
     except Exception as e:
-        click.secho(e, fg=Colors.error)
+        click.secho(e, fg=Colors.ERROR.value)
 
-    click.secho(f"Saved file to: {csvfile}", fg=Colors.success)
+    click.secho(f"Saved file to: {csvfile}", fg=Colors.SUCCESS.value)
 
 
 # """Transform Parquet file to desired format"""
