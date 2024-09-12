@@ -1,8 +1,17 @@
 from datetime import datetime as dt
+from os import remove as rmfile
 
 import click
 
 from src.parquet_duck.parquet import ParquetDuck
+from src.click_cli.utils import Colors, TransformFileFormat, get_file_extension
+
+
+
+TRANSFORM_CHOICES = click.Choice(
+    [ TransformFileFormat.CSV.filetype, TransformFileFormat.EXCEL.filetype, TransformFileFormat.JSON.filetype ],
+    case_sensitive=False
+)
 
 
 # """Interactively read & parse parquet files"""
@@ -82,12 +91,37 @@ def csv(file: str, csvfile: str | None) -> None:
     click.secho(f"Saved file to: {csvfile}", fg=Colors.SUCCESS.value)
 
 
-# """Transform Parquet file to desired format"""
-# @click.command()
-# @click.argument("file")
-# @click.option("--csv", help="Save in CSV format")
-# @click.option("--excel", help="Save in CSV format")
-# def transform(file: str, csv: str | None) -> None:
-#     pd = ParquetDuck(file)
-#     pass
+"""Transform Parquet file to desired format"""
+@click.command()
+@click.argument("file")
+@click.option("--ftype", "-t", type=TRANSFORM_CHOICES, default="csv", show_default=True, help="Transform to specified file format")
+@click.option("--fname", "-n", help="Filename for the transformed file")
+@click.option("--delete", "-d", flag_value=True, help="Delete the original Parquet file")
+def transform(file: str, ftype: str, fname: str | None, delete: bool) -> None:
+    filename = fname
+
+    if filename is None:
+        dt_iso = dt.now().isoformat()
+        dt_iso = dt_iso[:dt_iso.find('.')]
+
+        file_extension = get_file_extension(ftype)
+
+        filename = f"pyparquet_{ftype}_{dt_iso}{file_extension}"
+
+    try:
+        pd = ParquetDuck(file)
+
+        if ftype == TransformFileFormat.CSV.filetype:
+            pd.write_to_csv(filename)
+        elif ftype == TransformFileFormat.EXCEL.filetype:
+            pd.write_to_excel(filename)
+        elif ftype == TransformFileFormat.JSON.filetype:
+            pd.write_to_json(filename)
+
+        if delete:
+            rmfile(file)
+    except Exception as e:
+        click.secho(e, fg=Colors.ERROR.value)
+
+    click.secho(f"Saved file to: {filename}", fg=Colors.SUCCESS.value)
 
