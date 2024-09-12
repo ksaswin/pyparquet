@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 from os import remove as rmfile
+from sys import exit
 
 import click
 
@@ -43,6 +44,7 @@ def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
         pd.show_table(rows, row_offset)
     except Exception as e:
         click.secho(e, fg=Colors.ERROR.value)
+        exit(1)
 
 
 """Render the first specified number of rows in the table"""
@@ -56,6 +58,7 @@ def head(file: str, rows: int) -> None:
         pd.show_head(rows)
     except Exception as e:
         click.secho(e, fg=Colors.ERROR.value)
+        exit(1)
 
 
 """Render the last specified number of rows in the table"""
@@ -69,6 +72,7 @@ def tail(file: str, rows: int) -> None:
         pd.show_tail(rows)
     except Exception as e:
         click.secho(e, fg=Colors.ERROR.value)
+        exit(1)
 
 
 """Transform Parquet file to desired format"""
@@ -102,6 +106,7 @@ def transform(file: str, ftype: str, fname: str | None, delete: bool) -> None:
             rmfile(file)
     except Exception as e:
         click.secho(e, fg=Colors.ERROR.value)
+        exit(1)
 
     click.secho(f"Saved file to: {filename}", fg=Colors.SUCCESS.value)
 
