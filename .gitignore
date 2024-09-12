@@ -4,5 +4,6 @@
 .null-ls*
 
 .DS_Store
+dist/
 
 test.parquet
