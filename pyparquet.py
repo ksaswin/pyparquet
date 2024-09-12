@@ -11,5 +11,4 @@ def cli():
 cli.add_command(click_cmd.cat)
 cli.add_command(click_cmd.head)
 cli.add_command(click_cmd.tail)
-cli.add_command(click_cmd.csv)
 cli.add_command(click_cmd.transform)

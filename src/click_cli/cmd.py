@@ -71,26 +71,6 @@ def tail(file: str, rows: int) -> None:
         click.secho(e, fg=Colors.ERROR.value)
 
 
-"""Convert Parquet file to CSV file"""
-@click.command()
-@click.argument("file")
-@click.option("--csvfile", help="CSV file name to write the data")
-def csv(file: str, csvfile: str | None) -> None:
-    if csvfile is None:
-        dt_iso = dt.now().isoformat()
-        dt_iso = dt_iso[:dt_iso.find('.')]
-
-        csvfile = f'pyparquet_csv_{dt_iso}.csv'
-
-    try:
-        pd = ParquetDuck(file)
-        pd.write_to_csv(csvfile)
-    except Exception as e:
-        click.secho(e, fg=Colors.ERROR.value)
-
-    click.secho(f"Saved file to: {csvfile}", fg=Colors.SUCCESS.value)
-
-
 """Transform Parquet file to desired format"""
 @click.command()
 @click.argument("file")

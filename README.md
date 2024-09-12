@@ -47,28 +47,29 @@ COMMANDS:
         Usage:
             pyparquet cat FILE
         Options:
-            -s, --shape             Display the shape of the table
-            -r, --rows   INTEGER    Max number of rows to display
-            -o, --offset INTEGER    Offset the starting point
-  csv
-        Description:
-            Transform & Save file in CSV format
-        Usage:
-            pyparquet csv [OPTIONS] FILE
-        Options:
-            --csvfile    TEXT       CSV file name to write the data
+            -s, --shape                   Display the shape of the table
+            -r, --rows   INTEGER          Max number of rows to display
+            -o, --offset INTEGER          Offset the starting point
   head
         Description:
             Print the first 'r' rows of the table
         Usage:
             pyparquet head [OPTIONS] FILE
         Options:
-            -r, --rows   INTEGER    Number of rows to print [default: 10]
+            -r, --rows   INTEGER          Number of rows to print [default: 10]
   tail
         Description:
             Print the last 'r' rows of the table
         Usage:
             pyparquet tail [OPTIONS] FILE
         Options:
-            -r, --rows   INTEGER    Number of rows to print [default: 10]
+            -r, --rows   INTEGER          Number of rows to print [default: 10]
+  transform
+        Description:
+            Transform the Parquet file to [csv|excel|json] format
+        Usage:
+            pyparquet transform [OPTIONS] FILE
+        Options:
+            -n, --fname TEXT              Filename for the transformed file
+            -d, --delete                  Delete the original Parquet file
 ```
