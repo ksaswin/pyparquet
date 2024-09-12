@@ -25,13 +25,14 @@ TRANSFORM_CHOICES = click.Choice(
 #     print(pd)
 
 
-"""Show the entire table"""
 @click.command()
 @click.argument("file")
 @click.option("--shape", "-s", flag_value=True, help="Display the shape of the table")
 @click.option("--rows", "-r", type=int, help="Max number of rows to display")
 @click.option("--offset", "-o", type=int, help="Offset the starting point")
 def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
+    """Print the table"""
+
     row_offset = 0 if offset is None else offset
 
     try:
@@ -47,11 +48,12 @@ def cat(file: str, shape: bool, rows: int | None, offset: int | None) -> None:
         exit(1)
 
 
-"""Render the first specified number of rows in the table"""
 @click.command()
 @click.argument("file")
 @click.option("--rows", "-r", default=10, type=int, show_default=True, help="Number of rows to print")
 def head(file: str, rows: int) -> None:
+    """Print the first 'r' rows of the table"""
+
     try:
         pd = ParquetDuck(file)
 
@@ -61,11 +63,12 @@ def head(file: str, rows: int) -> None:
         exit(1)
 
 
-"""Render the last specified number of rows in the table"""
 @click.command()
 @click.argument("file")
 @click.option("--rows", "-r", default=10, show_default=True, type=int, help="Number of rows to print")
 def tail(file: str, rows: int) -> None:
+    """Print the last 'r' rows of the table"""
+
     try:
         pd = ParquetDuck(file)
 
@@ -75,13 +78,14 @@ def tail(file: str, rows: int) -> None:
         exit(1)
 
 
-"""Transform Parquet file to desired format"""
 @click.command()
 @click.argument("file")
 @click.option("--ftype", "-t", type=TRANSFORM_CHOICES, default="csv", show_default=True, help="Transform to specified file format")
 @click.option("--fname", "-n", help="Filename for the transformed file")
 @click.option("--delete", "-d", flag_value=True, help="Delete the original Parquet file")
 def transform(file: str, ftype: str, fname: str | None, delete: bool) -> None:
+    """Transform the Parquet file to [csv|excel|json] format"""
+
     filename = fname
 
     if filename is None:
