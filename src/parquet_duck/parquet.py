@@ -38,6 +38,11 @@ class ParquetDuck:
         return self._table.select("*")
 
 
+    def _load_extension(self, extension: str) -> None:
+        duckdb.install_extension(extension)
+        duckdb.load_extension(extension)
+
+
     def show_shape(self) -> None:
         table_name = "tmp_table_pyparquet"
 
@@ -68,9 +73,24 @@ class ParquetDuck:
         self._all_rows.limit(rows, offset).show()
 
 
-    def write_to_csv(self, csv_file: str) -> None:
-        self._table.to_csv(csv_file)
+    def write_to_csv(self, filename: str) -> None:
+        self._table.to_csv(filename)
 
 
-    def write_to_excel(self) -> None:
-        pass
+    def write_to_excel(self, filename: str) -> None:
+        # NOTE: Refer https://duckdb.org/docs/guides/file_formats/excel_export
+        self._load_extension("spatial")
+
+        view = "tmp_view_pyparquet"
+        self._table.to_view(view)
+
+        duckdb.sql(f"COPY {view} TO '{filename}' WITH (FORMAT GDAL, DRIVER 'xlsx');")
+        duckdb.sql(f"DROP VIEW IF EXISTS {view}")
+
+
+    def write_to_json(self, filename: str) -> None:
+        view = "tmp_view_pyparquet"
+        self._table.to_view(view)
+
+        duckdb.sql(f"COPY {view} TO '{filename}';")
+        duckdb.sql(f"DROP VIEW IF EXISTS {view}")
